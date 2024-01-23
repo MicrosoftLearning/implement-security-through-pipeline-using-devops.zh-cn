@@ -54,13 +54,13 @@ lab:
 
 1. 最好至少等待 3 个小时再使用 CI/CD 功能****，以使新的设置在后端反映出来。 否则，仍会看到消息“未购买或授予托管并行”。
 
-## 创建 Azure DevOps 示例项目的说明（只需执行此操作一次）
+## 创建和配置 Azure DevOps 项目的说明（只需执行一次）
 
 > 注意：在继续执行这些步骤之前，请确保已完成创建 Azure DevOps 组织的步骤。
 
-若要遵循所有实验室说明，需要设置一个新的 Azure DevOps 项目，并创建基于 eShopOnWeb[](https://github.com/MicrosoftLearning/eShopOnWeb) 应用程序的存储库。
+为了遵循所有实验室说明，你需要设置一个新的 Azure DevOps 项目，创建基于 [eShopOnWeb](https://github.com/MicrosoftLearning/eShopOnWeb) 应用程序的存储库，并创建与你的 Azure 订阅的服务连接。
 
-### 创建和配置团队项目
+### 创建团队项目
 
 首先你将创建一个 eShopOnWeb**** Azure DevOps 项目，供多个实验室使用。
 
@@ -74,7 +74,7 @@ lab:
 
 1. 选择**创建**。
 
-    ![创建项目](media/create-project.png)
+   ![创建项目](media/create-project.png)
 
 ### 导入 eShopOnWeb Git 存储库
 
@@ -88,14 +88,76 @@ lab:
 
 1. 在“导入 Git 存储库”**** 窗口上，粘贴以下 URL `https://github.com/MicrosoftLearning/eShopOnWeb` 并选择“导入”****：
 
-    ![导入存储库](media/import-repo.png)
+   ![导入存储库](media/import-repo.png)
 
 1. 存储库按以下方式组织：
-    
-    - .ado 文件夹包含 Azure DevOps YAML 管道。
-    - 设置 .devcontainer 文件夹容器，使用容器（在 VS Code 或 GitHub Codespaces 中本地进行）开发。
-    - .Azure**** 文件夹包含 Bicep 和 ARM 基础结构即代码模板。
-    - .github 文件夹容器 YAML GitHub 工作流定义。
-    - src 文件夹包含用于实验室方案的 .NET 6 网站。
+
+   - .ado 文件夹包含 Azure DevOps YAML 管道。
+   - 设置 .devcontainer 文件夹容器，使用容器（在 VS Code 或 GitHub Codespaces 中本地进行）开发。
+   - .Azure**** 文件夹包含 Bicep 和 ARM 基础结构即代码模板。
+   - .github 文件夹容器 YAML GitHub 工作流定义。
+   - src 文件夹包含用于实验室方案的 .NET 6 网站。 
+
+1. 保持 Web 浏览器窗口处于打开状态。  
+
+### 创建服务主体和服务连接以访问 Azure 资源
+
+接下来，你将使用 Azure CLI 创建服务主体，并在 Azure DevOps 中创建服务连接，以便部署和访问你的 Azure 订阅中的资源。
+
+1. 启动 Web 浏览器，导航到 `https://portal.azure.com` 处的 Azure 门户，使用用户帐户登录，该帐户须对你在本课程的实验室中使用的 Azure 订阅具有所有者角色，并在与此订阅关联的 Microsoft Entra 租户中具有全局管理员角色。
+
+1. 在 Azure 门户中，选择页面顶部搜索文本框右侧的 **Cloud Shell** 图标。
+
+1. 如果系统提示选择“Bash”或“PowerShell”，请选择“Bash”。
+
+   > [!NOTE]
+   > 如果这是你第一次启动 **Cloud Shell**，并看到“**未装载任何存储**”消息，请选择你在本实验室中使用的订阅，然后选择“**创建存储**”。
+
+1. 在 Bash 提示符的 Cloud Shell 窗格中，运行以下命令以检索 Azure 订阅 ID 和订阅名称属性的值 ：
+
+   ```bash
+   subscriptionName=$(az account show --query name --output tsv)
+   subscriptionId=$(az account show --query id --output tsv)
+   echo $subscriptionName
+   echo $subscriptionId
+   ```
+
+   > [!NOTE]
+   > 将两个值都复制到文本文件中。 本课程的实验室需要用到它们。
+
+1. 在 **Bash** 提示符的 **Cloud Shell** 窗格中，运行以下命令以创建服务主体：
+
+   ```bash
+   az ad sp create-for-rbac --name sp-eshoponweb-azdo --role contributor --scopes /subscriptions/$subscriptionId
+   ```
+
+   > [!NOTE]
+   > 此命令将生成 JSON 输出。 将输出复制到文本文件中。 稍后需要它。
+
+   > [!NOTE]
+   > 记录 JSON 输出中包含的安全主体名称、其 ID 和租户 ID 的值。 本课程的实验室需要用到它们。
+
+1. 切换回显示 Azure DevOps 门户的 Web 浏览器窗口，其中打开了 **eShopOnWeb** 项目，然后选择门户左下角的**项目设置**。
+
+1. 选择“管道”下的“**服务连接**”，然后选择“**创建服务连接**”按钮。
+
+   ![新建服务连接按钮的屏幕截图。](media/new-service-connection.png)
+
+1. 在“新建服务连接”边栏选项卡上，选择“Azure 资源管理器”和“下一步”（可能需要向下滚动）。
+
+1. 然后选择“**服务主体(手动)**，然后选择“**下一步**”。
+
+1. 使用在前面的步骤中收集的信息填写空字段：
+
+   - 订阅 ID 和名称。
+   - 服务主体 ID（或 clientId/AppId）、服务主体密钥（或密码）和 TenantId。
+   - 在“服务连接名称”中，键入 azure subs。 此名称将在 YAML 管道中引用，以引用服务连接，以便访问你的 Azure 订阅。
+
+   ![Azure 服务连接配置的屏幕截图。](media/azure-service-connection.png)
+
+1. 请勿勾选**为所有管道授予访问权限**。 选择**验证并保存**。
+
+   > [!NOTE]
+   > 不建议对生产环境使用**为所有管道授予访问权限**选项。 它仅在此实验室中用于简化管道的配置。
 
 现在，你已完成继续操作本实验室所需的先决条件步骤。
