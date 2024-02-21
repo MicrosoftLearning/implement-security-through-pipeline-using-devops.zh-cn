@@ -77,33 +77,37 @@ lab:
 
 1. 将 `Restore`、`Build` 和 `Test` 任务中的硬编码路径替换为刚刚创建的参数。
 
-   - **将项目**：`**/*.sln` 替换为 `Restore` 和 `Build` 任务中的项目 ${{ parameters.dotNetProjects }}。
-   - **将项目**：`tests/UnitTests/*.csproj` 替换为 `Test` 任务中的项目 ${{ parameters.testProjects }}。
+   - **** 替换项目：在 `Restore` 和 `Build` 任务中将 `**/*.sln` 替换为以下项目：`${{ "{{" }} parameters.dotNetProjects }}`。
+   - **** 替换项目：在 `Test` 任务中将 `tests/UnitTests/*.csproj` 替换为以下项目：`${{ "{{" }} parametertestProjects }}`
 
-   YAML 文件步骤部分中的 `Restore`、`Build` 和 `Test` 任务外观应如下所示：
+    YAML 文件步骤部分中的 `Restore`、`Build` 和 `Test` 任务外观应如下所示：
 
-   ```yaml
-       steps:
-       - task: DotNetCoreCLI@2
-         displayName: Restore
-         inputs:
-           command: 'restore'
-           projects: ${{ parameters.dotNetProjects }}
-           feedsToUse: 'select'
-   
-       - task: DotNetCoreCLI@2
-         displayName: Build
-         inputs:
-           command: 'build'
-           projects: ${{ parameters.dotNetProjects }}
-   
-       - task: DotNetCoreCLI@2
-         displayName: Test
-         inputs:
-           command: 'test'
-           projects: ${{ parameters.testProjects }}
+    {% raw %}
 
-   ```
+    ```yaml
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs:
+        command: 'restore'
+        projects: ${{ parameters.dotNetProjects }}
+        feedsToUse: 'select'
+    
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        command: 'build'
+        projects: ${{ parameters.dotNetProjects }}
+    
+    - task: DotNetCoreCLI@2
+      displayName: Test
+      inputs:
+        command: 'test'
+        projects: ${{ parameters.testProjects }}
+    
+    ```
+
+    {% endraw %}
 
 1. 保存管道并运行它。 验证管道运行是否成功完成。
 
@@ -145,11 +149,15 @@ lab:
 
 1. 在“生成”任务中，将命令：“build”替换为以下行，以利用变量组中的生成配置。
 
-   ```yaml
-           command: 'build'
-           projects: ${{ parameters.dotNetProjects }}
-           configuration: $(buildConfiguration)
-   ```
+    {% raw %}
+
+    ```yaml
+            command: 'build'
+            projects: ${{ parameters.dotNetProjects }}
+            configuration: $(buildConfiguration)
+    ```
+
+    {% endraw %}
 
 1. 保存管道并运行它。 在将生成配置设置为 `Release` 的情况下，它应会成功运行。 可以通过查看“生成”任务的日志来验证这一点。
 
@@ -166,42 +174,42 @@ lab:
 
 1. 在阶段部分的开头（紧跟在 `stage:` 行后面），添加一个名为**验证**的新阶段，以在管道执行之前验证强制变量。
 
-   ```yaml
-   - stage: Validate
-     displayName: Validate mandatory variables
-     jobs:
-     - job: ValidateVariables
-       pool:
-         vmImage: ubuntu-latest
-       steps:
-       - script: |
-           if [ -z "$(buildConfiguration)" ]; then
-             echo "Error: buildConfiguration variable is not set"
-             exit 1
-           fi
-         displayName: 'Validate Variables'
-    ```
+    ```yaml
+    - stage: Validate
+      displayName: Validate mandatory variables
+      jobs:
+      - job: ValidateVariables
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+        - script: |
+            if [ -z "$(buildConfiguration)" ]; then
+              echo "Error: buildConfiguration variable is not set"
+              exit 1
+            fi
+          displayName: 'Validate Variables'
+     ```
 
-   > [!NOTE]
-   > 此阶段将会运行脚本来验证 buildConfiguration 变量。 如果未设置变量，则脚本将失败，并且管道将停止。
+    > [!NOTE]
+    > 此阶段将会运行脚本来验证 buildConfiguration 变量。 如果未设置变量，则脚本将失败，并且管道将停止。
 
 1. 通过在**生成**阶段的开头添加 `dependsOn: Validate`，将**生成**阶段设置为依赖于**验证**阶段：
 
-   ```yaml
-   - stage: Build
-     displayName: Build .Net Core Solution
-     dependsOn: Validate
-      ```
+    ```yaml
+    - stage: Build
+      displayName: Build .Net Core Solution
+      dependsOn: Validate
+    ```
 
 1. 保存管道并运行它。 它将成功运行，因为 buildConfiguration 变量是在变量组中设置的。
 
 1. 要测试验证，请从变量组中移除 buildConfiguration 变量，或删除变量组，然后再次运行管道。 它应会失败并出现以下错误：
 
-   ```yaml
-   Error: buildConfiguration variable is not set   
-   ```
+    ```yaml
+    Error: buildConfiguration variable is not set   
+    ```
 
-   ![管道运行的屏幕截图，其中显示了验证失败。](media/pipeline-validation-fail.png)
+    ![管道运行的屏幕截图，其中显示了验证失败。](media/pipeline-validation-fail.png)
 
 1. 将变量组和 buildConfiguration 变量添加回变量组，然后再次运行管道。 它应已成功运行。
 
