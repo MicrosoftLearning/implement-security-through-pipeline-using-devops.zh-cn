@@ -15,7 +15,7 @@ lab:
 需要 Azure 订阅、Azure DevOps 组织和 eShopOnWeb 应用程序才能遵循实验室。
 
 - 按照步骤 [验证实验室环境](APL2001_M00_Validate_Lab_Environment.md)。
-- 按照实验室“[为安全管道配置代理和代理池](/Instructions/Labs/APL2001_M03_L03_Configure_Agents_And_Agent_Pools_for_Secure_Pipelines.md)”或“[安装自托管代理](https://docs.microsoft.com/azure/devops/pipelines/agents/v2-windows?view=azure-devops#install)”中的步骤安装自托管代理。
+- 按照实验室“[为安全管道配置代理和代理池](/Instructions/Labs/APL2001_M02_L02_Configure_Agents_And_Agent_Pools_for_Secure_Pipelines.md)”或“[安装自托管代理](https://docs.microsoft.com/azure/devops/pipelines/agents/v2-windows?view=azure-devops#install)”中的步骤安装自托管代理。
 
 ## 说明
 
@@ -49,7 +49,7 @@ lab:
    > [!NOTE]
    > 管道将采用基于项目名称的名称。 为了更好地识别该管道，请为其重命名。
 
-1. 转到“**管道 > 管道**”，选择最近创建的管道，选择省略号，然后选择“**重命名/移动**”选项。
+1. 转到“管道 > 管道****”，选择最近创建的管道，选择省略号，然后选择“重命名/移动****”选项。
 
 1. 将其命名为 **eshoponweb-ci**，然后选择“**保存**”。
 

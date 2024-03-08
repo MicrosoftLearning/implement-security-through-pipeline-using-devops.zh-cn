@@ -161,7 +161,7 @@ lab:
    variables:
      resource-group: 'rg-eshoponweb-secure'
      location: 'southcentralus' #the name of the Azure region you want to deploy your resources
-     templateFile: '.azure/bicep/webapp.bicep'
+     templateFile: 'infra/webapp.bicep'
      subscriptionid: 'YOUR-SUBSCRIPTION-ID'
      azureserviceconnection: 'azure subs' #the name of the service connection to your Azure subscription
      webappname: 'eshoponweb-lab-secure-XXXXXX' #the globally unique name of the web app
@@ -249,7 +249,7 @@ lab:
 
 1. 转到 **“管道”>“管道”**。
 
-1. 转到“**管道”>“管道**”并删除现有管道。
+1. 转到“**管道 > 管道**”并删除现有管道。
 
 #### 任务 3：重新创建 Azure DevOps 存储库
 
