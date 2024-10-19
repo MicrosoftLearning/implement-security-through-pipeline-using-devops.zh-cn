@@ -77,8 +77,8 @@ lab:
 
 1. 将 `Restore`、`Build` 和 `Test` 任务中的硬编码路径替换为刚刚创建的参数。
 
-   - **** 替换项目：在 `Restore` 和 `Build` 任务中将 `**/*.sln` 替换为以下项目：`${{ "{{" }} parameters.dotNetProjects }}`。
-   - **** 替换项目：在 `Test` 任务中将 `tests/UnitTests/*.csproj` 替换为以下项目：`${{ "{{" }} parametertestProjects }}`
+   - **** 替换项目：在 `Restore` 和 `Build` 任务中将 `**/*.sln` 替换为以下项目：`${{ parameters.dotNetProjects }}`。
+   - **** 替换项目：在 `Test` 任务中将 `tests/UnitTests/*.csproj` 替换为以下项目：`${{ parameters.testProjects }}`
 
     YAML 文件步骤部分中的 `Restore`、`Build` 和 `Test` 任务外观应如下所示：
 
