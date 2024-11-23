@@ -53,7 +53,7 @@ lab:
    | “订阅”下拉列表 | 选择 Azure 订阅。 |
    | “资源组”部分 | 创建名为 **rg-eshoponweb-agentpool** 的新资源组。 |
    | **虚拟机名称** 文本框 | 输入你偏好的名称，例如 **eshoponweb-vm**。 |
-   | “区域”下拉列表 | 选择你在本实验室前面使用的同一 Azure 区域。 |
+   | “区域”下拉列表 | 可以选择离你最近的 [azure](https://azure.microsoft.com/explore/global-infrastructure/geographies) 区域。 例如，“eastus”、“eastasia”、“westus”等。 |
    | **可用性选项**下拉列表 | 选择“无需基础结构冗余”。 |
    | **安全性类型**下拉列表 | 选择“**受信任启动虚拟机**”选项。 |
    | “映像”下拉列表 | 选择 **Windows Server 2022 Datacenter:Azure Edition - x64 Gen2** 映像。 |
@@ -67,18 +67,21 @@ lab:
 
 1. 在“查看 + 创建”选项卡上，选择“创建”。
 
-   > [!NOTE]
-   > 等待预配过程完成。 这大约需要 2 分钟。
+   > **注意**：等待预配过程完成。 这大约需要 2 分钟。
 
-1. 在 Azure 门户中，导航到显示新创建的 Azure VM 配置的页面。 
+1. 在 Azure 门户中，导航到显示新创建的 Azure VM 配置的页面。
 
-1. 在 Azure VM 页上，选择“**连接**”，在下拉菜单中选择“**连接**”，然后选择“**下载 RDP 文件**”，并使用下载的 RDP 文件与在 Azure VM 中运行的操作系统建立远程桌面会话。
+1. 在 Azure VM 页上，选择“**连接**”，在下拉菜单中选择“**连接**”，然后选择“**下载 RDP 文件**”。
+
+1. 使用下载的 RDP 文件与在 Azure VM 中运行的操作系统建立远程桌面会话。
 
 #### 任务 2：创建代理池
 
 1. 在与 Azure VM 的远程桌面会话中，启动 Microsoft Edge Web 浏览器。
 
-1. 在 Web 浏览器中，导航到 `https://dev.azure.com` 处的 Azure DevOps 门户，然后登录以访问你的组织。
+1. 在 Web 浏览器中，导航到 `https://aex.dev.azure.com` 处的 Azure DevOps 门户，然后登录以访问你的组织。
+
+   > **备注**：如果是第一次访问 Azure DevOps 门户，可能需要创建配置文件。
 
 1. 打开 **eShopOnWeb** 项目，然后从左侧底部菜单中选择“**项目设置**”。
 
@@ -92,6 +95,8 @@ lab:
 
    ![显示添加自托管类型的代理池选项的屏幕截图。](media/create-new-agent-pool-self-hosted-agent.png)
 
+   > **备注**：不建议对生产环境中的所有管道授予访问权限。 它仅在此实验室中用于简化管道的配置。
+
 1. 选择“**创建**”按钮以创建代理池。
 
 #### 任务 3：下载并提取代理安装文件
@@ -100,8 +105,7 @@ lab:
 
 1. 选择“**新建代理**”按钮，然后在新的弹出窗口中选择“**下载代理**”和“**下载**”按钮。
 
-   > [!NOTE]
-   > 按照安装说明安装代理。
+   > **备注**：按照安装说明安装代理并在文件名中记下下载的版本（例如：vsts-agent-win-x64-3.246.0.zip）
 
 1. 启动 PowerShell 会话并运行以下命令创建名为 **agent** 的文件夹。
 
@@ -109,24 +113,21 @@ lab:
    mkdir agent ; cd agent        
    ```
 
-   > [!NOTE]
-   > 确保你处于用户配置文件的根文件夹或要安装代理的文件夹中。
+   > **备注**：请确保位于要安装代理的文件夹，例如 C:\agent。
 
 1. 运行以下命令以提取下载的代理安装程序文件的内容：
 
    ```powershell
-   Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$HOME\Downloads\vsts-agent-win-x64-3.232.0.zip", "$PWD")
+   Add-Type -AssemblyName System.IO.Compression.FileSystem ; [System.IO.Compression.ZipFile]::ExtractToDirectory("$HOME\Downloads\vsts-agent-win-x64-3.246.0.zip", "$PWD")
    ```
 
-   > [!NOTE]
-   > 如果将代理下载到其他位置（或下载的版本不同），请相应地调整上述命令。
+   > **备注**：如果将代理下载到其他位置（或下载的版本不同），请相应地调整上述命令。
 
 #### 任务 4：创建 PAT 令牌
 
-> [!NOTE]
-> 在配置代理之前，需要创建 PAT 令牌（除非已有）。 若要创建 PAT 令牌，请执行以下步骤：
+> **备注**：配置代理之前，需要创建 PAT 令牌（除非已有）。 若要创建 PAT 令牌，请执行以下步骤：
 
-1. 在与 Azure VM 的远程桌面会话中，打开另一个浏览器窗口，导航到 `https://dev.azure.com` 处的 Azure DevOps 门户，然后访问你的组织。
+1. 在与 Azure VM 的远程桌面会话中，打开另一个浏览器窗口，导航到 Azure DevOps 门户（网址为 `https://aex.dev.azure.com`），然后访问你的组织和项目。
 
 1. 从右侧顶部菜单中选择“**用户设置**”（就在你的用户头像图标左侧）。
 
@@ -155,11 +156,11 @@ lab:
    ![显示个人访问令牌配置的屏幕截图。](media/personal-access-token-configuration.png)
 
    > [!IMPORTANT]
-   > 仅对代理配置使用最低特权选项“**代理池(读取和管理)**”。 此外，如果这是令牌的唯一用途，请确保为令牌设置最短的到期日期。 如果需要再次配置代理，则可以创建另一个具有相同特权的令牌。
+   > 仅对代理配置使用最低特权选项“**代理池 (读取和管理)**”。 此外，如果这是令牌的唯一用途，请确保为令牌设置最短的到期日期。 如果需要再次配置代理，则可以创建另一个具有相同特权的令牌。
 
 #### 任务 5：配置代理
 
-1. 在与 Azure VM 的远程桌面会话中，切换回 PowerShell 窗口。 如有必要，请将当前目录更改为你在本练习前面将代理安装文件提取到的目录。 
+1. 在与 Azure VM 的远程桌面会话中，切换回 PowerShell 窗口。 如有必要，请将当前目录更改为你在本练习前面将代理安装文件提取到的目录。
 
 1. 若要将代理配置为无人参与运行，请调用以下命令：
 
@@ -167,16 +168,15 @@ lab:
    .\config.cmd
    ```
 
-   > [!NOTE]
-   > 如果要以交互方式运行代理，请改用 `.\run.cmd`。 
+   > **备注**：如果要以交互方式运行代理，请改用 `.\run.cmd`。
 
 1. 若要配置代理，请在出现提示时执行以下操作：
 
-   - 以“`https://dev.azure.com/`{你的组织名称}”格式输入 Azure DevOps 组织的 URL（**服务器 URL**）。
+   - 以“`https://aex.dev.azure.com`{你的组织名称}”格式输入 Azure DevOps 组织的 URL（**服务器 URL**）。
    - 接受默认身份验证类型 (**PAT**)。
    - 输入你在上一步中创建的 PAT 令牌的值。
-   - 输入你在本练习前面创建的代理池名称 **eShopOnWebSelfPool**。
-   - 输入代理名称 **eShopOnWebSelfAgent**。
+   - 输入在本练习前面创建的代理池名称 **`eShopOnWebSelfPool`**。
+   - 输入代理名称 **`eShopOnWebSelfAgent`**。
    - 接受默认代理工作文件夹 (_work)。
    - 输入 **Y** 将代理配置为作为服务运行。
    - 输入 **Y** 为代理服务启用 SERVICE_SID_TYPE_UNRESTRICTED。
@@ -189,23 +189,39 @@ lab:
 
    ![显示代理配置的屏幕截图。](media/agent-configuration.png)
 
+   > **备注**：完成代理配置过程可能需要几分钟时间。 完成后，会看到一条消息，指示代理正在作为服务运行。
+
+   > [!IMPORTANT] 如果看到一条错误消息，指出代理未运行，则可能需要手动启动服务。 为此，请在 Windows 控制面板中打开“**服务**”小程序，找到名为 **Azure DevOps 代理 (eShopOnWebSelfAgent)** 的服务，然后启动它。
+
+   > [!IMPORTANT] 如果代理无法启动，可能需要为代理工作目录选择其他文件夹。 为此，请重新运行代理配置脚本并选择其他文件夹。
+
 1. 切换到显示 Azure DevOps 门户的 Web 浏览器，导航到代理池并单击“**代理**”选项卡，检查代理状态。此时应会在列表中看到新代理。
 
    ![显示代理状态的屏幕截图。](media/agent-status.png)
 
-   > [!NOTE]
-   > 有关 Windows 代理的更多详细信息，请参阅：[Self-hosted Windows agents](https://learn.microsoft.com/azure/devops/pipelines/agents/windows-agent)（自托管 Windows 代理）
+   > **备注**：有关 Windows 代理的更多详细信息，请参阅：[自托管 Windows 代理](https://learn.microsoft.com/azure/devops/pipelines/agents/windows-agent)
 
    > [!IMPORTANT]
    > 为了使代理能够从 Azure DevOps 管道生成和部署 Azure 资源（你将在接下来的实验室中逐步完成这部分），需要在托管代理的 Azure VM 的操作系统中安装 Azure CLI。
 
-1. 启动 Web 浏览器并导航到[在 Windows 上安装 Azure CLI](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli-windows?tabs=azure-cli#install-or-update) 页面。
+1. 启动 Web 浏览器并导航到[在 Windows 上安装 Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli-windows?tabs=azure-cli#install-or-update) 页面。
 
-1. 下载并安装 Azure CLI。 
+1. 下载并安装 Azure CLI。
 
-1. 在 Web 浏览器中，导航到 `https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-7.0.404-windows-x64-installer` 处的 Microsoft .NET 7.0 SDK 安装程序页面。
+1. （可选）如果需要，请运行以下 PowerShell 命令以安装 Azure CLI：
 
-1. 下载并安装 Microsoft .NET 7.0 SDK。
+   ```powershell
+   $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; Remove-Item .\AzureCLI.msi
+   ```
+
+   > **备注**：如果使用不同版本的 Azure CLI，可能需要相应地调整上述命令。
+
+1. 在 Web 浏览器中，导航到 `https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/sdk-8.0.403-windows-x64-installer` 处的 Microsoft .NET 8.0 SDK 安装程序页面。
+
+   > [!IMPORTANT]
+   > 需要在托管代理的 Azure VM 上安装 .NET 8.0 SDK（或更高版本）。 这是在即将推出的实验室中生成 eShopOnWeb 应用程序所必需的。 应用程序生成所需的任何其他工具或 SDK 也应安装在 Azure VM 上。
+
+1. 下载并安装 Microsoft .NET 8.0 SDK。
 
 ### 练习 2：创建和配置代理池安全性
 
@@ -252,35 +268,12 @@ lab:
 
    ![显示代理池安全性配置的屏幕截图。](media/agent-pool-security.png)
 
-现在可以安全地在管道中使用代理池了。 有关代理池的更多详细信息，请参阅：[代理池](https://learn.microsoft.com/azure/devops/pipelines/agents/pools-queues)。
+现在可以安全地在管道中使用代理池了。 可以使用新组来添加用户和管理代理池的权限。 可以使用新组重新配置已安装的自托管代理，以确保代理具有运行管道所需的权限，且不再有其他权限。 例如，可以将用户添加到组，并将代理配置为以该用户身份运行。
 
-### 练习 4：执行 Azure 和 Azure DevOps 资源的清理
+有关代理池的更多详细信息，请参阅：[代理池](https://learn.microsoft.com/azure/devops/pipelines/agents/pools-queues)。
 
-在本练习中，你将对在此实验室中创建的一些 Azure DevOps 资源执行实验室后清理。
-
-#### 任务 1：停止并解除分配 Azure VM
-
-> [!NOTE]
-> 你将在下一个实验室中使用此实验室中创建的 Azure VM，因此不必删除它，可以停止并解除分配它以消除其计算费用。
-
-1. 在 Azure 门户中，导航到显示你在此实验室中部署的 Azure VM **eshoponweb-vm** 的页面
-
-1. 在 **eshoponweb-vm** Azure VM 页上的工具栏中，选择“**停止**”以停止并解除分配它。
-
-#### 任务 2：移除 Azure DevOps 资源
-
-> [!NOTE]
-> 你将在下一个实验室中使用此实验室中创建的自托管代理，因此不必删除它，只需撤销用于配置它的个人访问令牌。 这不会阻止它稍后运行。
-
-1. 在 Azure DevOps 门户中，从右侧顶部菜单中选择“**用户设置**”（就在你的用户头像图标左侧）。
-
-1. 选择“**个人访问令牌**”菜单项。
-
-   ![显示个人访问令牌菜单的屏幕截图。](media/personal-access-token-menu.png)
-
-1. 选择 **eShopOnWebToken** 条目。 
-
-1. 选择“**撤销**”，并在系统提示确认时再次选择“**撤销**”。
+> [!IMPORTANT]
+> 请记住删除在 Azure 门户中创建的资源，以避免不必要的费用。
 
 ## 审阅
 
