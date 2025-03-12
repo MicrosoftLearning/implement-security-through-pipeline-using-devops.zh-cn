@@ -31,7 +31,7 @@ lab:
 
 1. 在 Azure DevOps 中打开 **eShopOnWeb** 项目。
 
-1. 转到 **“管道”>“管道”**。
+1. 转到“**管道 > 管道**”。
 
 1. 选择“**创建管道**”按钮。
 
@@ -55,7 +55,7 @@ lab:
 
 > **备注**：在此任务中，你将导入并运行名为 [eshoponweb-cd-webapp-code.yml](https://github.com/MicrosoftLearning/eShopOnWeb/blob/main/.ado/eshoponweb-cd-webapp-code.yml) 的 CD 管道。
 
-1. 转到 **“管道”>“管道”**。
+1. 转到“**管道 > 管道**”。
 
 1. 选择“**新建管道**”按钮。
 
